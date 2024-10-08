@@ -10,21 +10,8 @@
 #include <string.h>
 #include <errno.h>
 
-#define CMDBUFLEN 100
-
-int run_cmd(char *cmd, ...)
-{
-    va_list ap;
-    char buf[CMDBUFLEN];
-    va_start(ap, cmd);
-    vsnprintf(buf, CMDBUFLEN, cmd, ap);
-
-    va_end(ap);
-
-    printf("%s\n", buf);
-
-    return system(buf);
-}
+#include "basic.h"
+#include "util.h"
 
 
 int set_if_route(char *dev, char *cidr)
@@ -55,7 +42,7 @@ int tun_alloc(char *dev)
         exit(1);
     }
 
-    memset(&ifr, 0, sizeof(ifr));
+    CLEAR(ifr);
 
     /* Flags: IFF_TUN   - TUN device (no Ethernet headers)
      *        IFF_TAP   - TAP device
