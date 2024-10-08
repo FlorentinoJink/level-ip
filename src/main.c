@@ -28,5 +28,7 @@ int main(int argc, char** argv) {
 
     read(tun_fd, buf, 100);
 
+    printf(buf, 100);
+
     free(dev);
 }
