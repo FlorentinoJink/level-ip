@@ -9,6 +9,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include "util.h"
+#include "basic.h"
 #include "tuntap_if.h"
 
 int set_if_route(char *dev, char *cidr)
@@ -35,11 +36,11 @@ int tun_alloc(char *dev)
     int fd, err;
 
     if( (fd = open("/dev/net/tap", O_RDWR)) < 0 ) {
-        printf("Cannot open TUN/TAP dev");
+        eprint("Cannot open TUN/TAP dev");
         exit(1);
     }
 
-    memset(&ifr, 0, sizeof(ifr));
+    CLEAR(ifr);
 
     /* Flags: IFF_TUN   - TUN device (no Ethernet headers)
      *        IFF_TAP   - TAP device
@@ -52,7 +53,7 @@ int tun_alloc(char *dev)
     }
 
     if( (err = ioctl(fd, TUNSETIFF, (void *) &ifr)) < 0 ){
-        printf("ERR: Could not ioctl tun: %s\n", strerror(errno));
+        eprint("ERR: Could not ioctl tun: %s\n", strerror(errno));
         close(fd);
         return err;
     }

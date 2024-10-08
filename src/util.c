@@ -28,3 +28,14 @@ void hex_dump(char* str, size_t len)
     }
     printf("\n");
 }
+
+void eprint(char* str, ...)
+{
+    va_list ap;
+    char buf[200];
+    va_start(ap, str);
+    vsnprintf(buf, 200, str, ap);
+    va_end(ap);
+
+    perror(buf);
+}
