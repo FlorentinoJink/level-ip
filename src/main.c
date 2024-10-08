@@ -6,6 +6,7 @@
 
 #include "basic.h"
 #include "tuntap_if.h"
+#include "util.h"
 
 int main(int argc, char** argv) {
     int tun_fd;
@@ -22,13 +23,15 @@ int main(int argc, char** argv) {
         printf("ERROR when setting address for if\n");
     };
 
-    if (set_if_route(dev, "10.0.0.0/24") != 0) {
+    if (set_if_route(dev, "10.0.0.1") != 0) {
         printf("ERROR when setting route for if\n");
     }
 
-    read(tun_fd, buf, 100);
-
-    printf(buf, 100);
-
+    while (1)
+    {
+        read(tun_fd, buf, 100);
+        hex_dump(buf, 100);
+    }
+    
     free(dev);
 }
