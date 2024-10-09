@@ -47,6 +47,7 @@ int main(int argc, char **argv)
     {
         eprint("ERROR when setting route for if\n");
     }
+    arp_init();
     while (1)
     {
         read(tun_fd, buf, BUFFSIZE);
