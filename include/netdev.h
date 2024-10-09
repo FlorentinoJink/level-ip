@@ -5,8 +5,8 @@
 
 struct netdev
 {
-    struct in_addr addr;
-    unsigned char hw_addr[6];
+    uint32_t addr;
+    unsigned char hwaddr[6];
 };
 
 void netdev_init(struct netdev *dev, char *addr, char *hwaddr);

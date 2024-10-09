@@ -29,27 +29,21 @@ void handle_frame(struct netdev *netdev, struct eth_hdr *hdr)
 
 int main(int argc, char **argv)
 {
-    int tun_fd;
     char buf[BUFFSIZE];
     char *dev = calloc(10, 1);
     struct netdev netdev;
     CLEAR(buf);
-    tun_fd = tun_alloc(dev);
+    tun_init(dev);
     netdev_init(&netdev, "10.0.0.4", "00:0c:29:6d:50:25");
-    if (set_if_up(dev) != 0)
-    {
-        eprint("ERROR when setting up if\n");
-    }
-    if (set_if_route(dev, "10.0.0.0/24") != 0)
-    {
-        eprint("ERROR when setting route for if\n");
-    }
-
     arp_init();
     while (1)
     {
-        read(tun_fd, buf, BUFFSIZE);
+        if (tun_read(buf, BUFFSIZE) < 0) {
+            eprint("ERR: Read from tun_fd: %s\n", strerror(errno));
+        }
+
         struct eth_hdr *eth_hdr = init_eth_hdr(buf);
+
         handle_frame(&netdev, eth_hdr);
     }
 
