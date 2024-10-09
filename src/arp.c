@@ -3,6 +3,26 @@
 
 static struct arp_cache_entry arp_cache[ARP_CACHE_LEN];
 
+static int update_arp_translation_table(struct arp_hdr *hdr, struct arp_ipv4 *data)
+{
+    struct arp_cache_entry *entry;
+    for (size_t i = 0; i < ARP_CACHE_LEN; ++i)
+    {
+        entry = &arp_cache[i];
+        if (entry->state == ARP_FREE)
+        {
+            continue;
+        }
+        if (entry->hw_type == hdr->hw_type && entry->saddr == data->saddr)
+        {
+            memcpy(entry->smac, data->smac, 6);
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
 void arp_init()
 {
     memset(arp_cache, 0, ARP_CACHE_LEN * sizeof(struct arp_cache_entry));
@@ -43,24 +63,4 @@ void arp_incoming(struct netdev *netdev, struct eth_hdr *hdr)
         eprint("Opcode not supported\n");
         break;
     }
-}
-
-int update_arp_translation_table(struct arp_hdr *hdr, struct arp_ipv4 *data)
-{
-    struct arp_cache_entry *entry;
-    for (size_t i = 0; i < ARP_CACHE_LEN; ++i)
-    {
-        entry = &arp_cache[i];
-        if (entry->state == ARP_FREE)
-        {
-            continue;
-        }
-        if (entry->hw_type == hdr->hw_type && entry->saddr == data->saddr)
-        {
-            memcpy(entry->smac, data->smac, 6);
-            return 1;
-        }
-    }
-
-    return 0;
 }
