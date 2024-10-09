@@ -2,7 +2,7 @@
 Wirte a tcp/ip stack, this project is for learning computer network.
 
 ## Roadmap
-- [X] Ethernet & ARP
+- [x] Ethernet & ARP
 - [ ] IPv4 & ICMPv4
 - [ ] TCP Basics & Handshake
 - [ ] TCP Data Flow & Socket API
