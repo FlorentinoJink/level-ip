@@ -26,7 +26,8 @@ int tun_alloc(char *dev)
     struct ifreq ifr;
     int fd, err;
 
-    if( (fd = open("/dev/net/tap", O_RDWR)) < 0 ) {
+    if ((fd = open("/dev/net/tap", O_RDWR)) < 0)
+    {
         eprint("Cannot open TUN/TAP dev");
         exit(1);
     }
@@ -39,11 +40,13 @@ int tun_alloc(char *dev)
      *        IFF_NO_PI - Do not provide packet information
      */
     ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
-    if( *dev ) {
+    if (*dev)
+    {
         strncpy(ifr.ifr_name, dev, IFNAMSIZ);
     }
 
-    if( (err = ioctl(fd, TUNSETIFF, (void *) &ifr)) < 0 ){
+    if ((err = ioctl(fd, TUNSETIFF, (void *)&ifr)) < 0)
+    {
         eprint("ERR: Could not ioctl tun: %s\n", strerror(errno));
         close(fd);
         return err;
