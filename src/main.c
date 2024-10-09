@@ -2,17 +2,20 @@
 #include "basic.h"
 #include "tuntap_if.h"
 #include "util.h"
+#include "ethernet.h"
 
 #define BUFFSIZE 100
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv)
+{
     int tun_fd;
     char buf[BUFFSIZE];
     char *dev = calloc(10, 1);
     CLEAR(buf);
     tun_fd = tun_alloc(dev);
 
-    if (set_if_up(dev) != 0) {
+    if (set_if_up(dev) != 0)
+    {
         eprint("ERROR when setting up if\n");
     }
 
@@ -20,15 +23,17 @@ int main(int argc, char** argv) {
     //     eprint("ERROR when setting address for if\n");
     // };
 
-    if (set_if_route(dev, "10.0.0.0/24") != 0) {
+    if (set_if_route(dev, "10.0.0.0/24") != 0)
+    {
         eprint("ERROR when setting route for if\n");
     }
-
+    struct eth_hdr *eth_hdr = init_eth_hdr(buf);
     while (1)
     {
         read(tun_fd, buf, BUFFSIZE);
         hex_dump(buf, BUFFSIZE);
+        print_eth_hdr(eth_hdr);
     }
-    
+
     free(dev);
 }

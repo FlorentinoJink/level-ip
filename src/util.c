@@ -15,7 +15,7 @@ int run_cmd(char *cmd, ...)
     return system(buf);
 }
 
-void hex_dump(char* str, size_t len)
+void hex_dump(char *str, size_t len)
 {
     printf("Printing hexdump:\n");
     for (size_t i = 0; i < len; ++i)
@@ -27,7 +27,7 @@ void hex_dump(char* str, size_t len)
     printf("\n");
 }
 
-void eprint(char* str, ...)
+void eprint(char *str, ...)
 {
     va_list ap;
     char buf[200];
