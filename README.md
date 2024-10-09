@@ -1,5 +1,5 @@
 # level-ip
-重新写一个简单的TCP/IP协议栈
+Wirte a tcp/ip stack, this project is for learning computer network.
 
 ## Roadmap
 - [ ] Ethernet & ARP
