@@ -3,6 +3,24 @@
 
 static struct arp_cache_entry arp_cache[ARP_CACHE_LEN];
 
+static int insert_arp_translation_table(struct arp_hdr *hdr, struct arp_ipv4 *data)
+{
+    struct arp_cache_entry *entry;
+    for (size_t i = 0; i < ARP_CACHE_LEN; ++i)
+    {
+        entry = &arp_cache[i];
+        if (entry->state == ARP_FREE)
+        {
+            entry->state = ARP_RESOLVED;
+            memcpy(&entry->hw_type, &hdr->hw_type, sizeof(hdr->hw_type));
+            memcpy(entry->saddr, data->saddr, sizeof(data->saddr));
+            memcpy(entry->smac, data->smac, sizeof(data->smac));
+            return 0;
+        }
+    }
+    return -1;
+}
+
 static int update_arp_translation_table(struct arp_hdr *hdr, struct arp_ipv4 *data)
 {
     struct arp_cache_entry *entry;
@@ -33,7 +51,7 @@ void arp_incoming(struct netdev *netdev, struct eth_hdr *hdr)
     struct arp_hdr *arphdr;
     struct arp_ipv4 *arp_payload;
 
-    // int merge_flag = 0;
+    int merge_flag = 0;
 
     arphdr = (struct arp_hdr *)hdr->payload;
     arphdr->hw_type = htons(arphdr->hw_type);
@@ -47,17 +65,26 @@ void arp_incoming(struct netdev *netdev, struct eth_hdr *hdr)
     }
     if (arphdr->pro_type != ARP_IPV4)
     {
-        eprint("Unsupported protocol type\n");
+        eprint("Unsupported protocol\n");
         return;
     }
     arp_payload = (struct arp_ipv4 *)arphdr->payload;
 
-    update_arp_translation_table(arphdr, arp_payload);
+    merge_flag = update_arp_translation_table(arphdr, arp_payload);
+
+    if (!memcmp(&netdev->addr, arp_payload->daddr,4))
+    {
+        printf("ARP was not for us\n");
+    }
+    
+    if (!merge_flag && insert_arp_translation_table(arphdr, arp_payload) != 0)
+    {
+       perror("ERR: No free space in ARP translation table\n"); 
+    }
 
     switch (arphdr->opcode)
     {
     case ARP_REQUEST:
-        printf("ARP_REQUEST\n");
         break;
     default:
         eprint("Opcode not supported\n");
