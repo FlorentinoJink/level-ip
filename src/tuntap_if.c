@@ -30,7 +30,10 @@ static int tun_alloc(char *dev)
 
     if ((fd = open("/dev/net/tap", O_RDWR)) < 0)
     {
-        eprint("Cannot open TUN/TAP dev");
+        eprint("Cannot open TUN/TAP dev"
+               "Make sure one exists with "
+               "'$ sudo mknod /dev/net/tap c 10 200'\n"
+               "'$ sudo chmod 0666 /dev/net/tap '\n");
         exit(1);
     }
 
@@ -72,11 +75,13 @@ void tun_init(char *dev)
 {
     tun_fd = tun_alloc(dev);
 
-    if (set_if_up(dev) != 0) {
+    if (set_if_up(dev) != 0)
+    {
         eprint("ERROR when setting up if\n");
     }
 
-    if (set_if_route(dev, "10.0.0.0/24") != 0) {
+    if (set_if_route(dev, "10.0.0.0/24") != 0)
+    {
         eprint("ERROR when setting route for if\n");
     }
 }
