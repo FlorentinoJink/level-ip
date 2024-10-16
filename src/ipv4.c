@@ -9,5 +9,17 @@ void ipv4_incoming(struct netdev *netdev, struct eth_hdr *hdr)
     iphdr->csum = ntohs(iphdr->csum);
     iphdr->saddr = ntohs(iphdr->saddr);
     iphdr->daddr = ntohs(iphdr->daddr);
-    printf("ipv4 package len: %d\n", iphdr->len);
+    
+    if (iphdr->ihl < 5)
+    {
+        perror("IPv4 header length must be at least 5\n");
+        return;
+    }
+    if (iphdr->ttl == 0)
+    {
+        perror("Time to live of datagram reached 0\n");
+        return;
+    }
+    
+    
 }
