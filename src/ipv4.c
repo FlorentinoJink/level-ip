@@ -1,5 +1,6 @@
 #include "ipv4.h"
 #include "icmpv4.h"
+#include "arp.h"
 
 void ipv4_incoming(struct netdev *netdev, struct eth_hdr *hdr)
 {
@@ -31,6 +32,24 @@ void ipv4_incoming(struct netdev *netdev, struct eth_hdr *hdr)
     default:
         perror("Unknown IP header proto\n");
         break;
+    }
+    
+}
+
+void ipv4_outgoing(struct netdev *netdev, struct eth_hdr *hdr)
+{
+    struct iphdr *iphdr = (struct iphdr *)hdr->payload;
+    unsigned char* smac;
+    uint32_t tmpaddr;
+
+    if ((smac = arp_get_hwaddr(&iphdr->saddr)) == NULL)
+    {
+        perror("Should make ARP request\n");
+    } else {
+        tmpaddr = iphdr->saddr;
+        iphdr->daddr = tmpaddr;
+        iphdr->saddr = netdev->addr;
+        netdev_transmit(netdev, hdr, ETH_P_ARP, iphdr->len, hdr->smac);
     }
     
 }
